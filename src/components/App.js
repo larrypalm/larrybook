@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
 
 import {connect} from 'react-redux';
-
+import {addUser} from '../actions/actions'
 class App extends Component {
 
   state = {
     user:"",
-    
   }
 
   render() {
     return (
       <div className="App">
-
+        <button onClick={this.props.addUser}>
+          Add User
+        </button>
       </div>
     );
   }
@@ -20,14 +21,14 @@ class App extends Component {
 
 function mapStateToProps(state){
   return {
-    user: s
+    user: state.user,
   }
 }
 
 function mapDispatchToProps(dispatch){
   return {
-    user: state.user,
+    addUser: () => dispatch
   }
 }
 
-export default connect(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);
