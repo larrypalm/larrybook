@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 
+import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {addPost, removePost} from '../actions/actions'
+import * as actions from '../actions/actions'
 class App extends Component {
 
   state = {
-    user:"",
     value: "",
   }
 
   add = () => {
     console.log("Add");
-    this.props.addPost({
+    this.props.actions.addPost({
       content: this.state.value,
       id: Math.floor(Math.random()*1000+1),
     })
@@ -19,7 +19,7 @@ class App extends Component {
   }
 
   remove = (post) => {
-    this.props.removePost(post);
+    this.props.actions.removePost(post);
   }
 
   onChange = e => this.setState({ [e.target.name]: e.target.value})
@@ -34,7 +34,7 @@ class App extends Component {
     return (
       <div className="App">
         <input type="text" onChange={this.onChange} name="value" value={this.state.value} />
-        <button onClick={this.props.add}>
+        <button onClick={this.add}>
           Add Post
         </button>
         <div>
@@ -48,14 +48,14 @@ class App extends Component {
 
 function mapStateToProps(state){
   return {
-    posts: state
+    posts: state.posts,
+    error: state.error
   }
 }
 
 function mapDispatchToProps(dispatch){
   return {
-    addPost: post => dispatch(addPost(post)),
-    removePost: post => dispatch(removePost(post)),
+    actions: bindActionCreators(actions, dispatch)
   }
 }
 
