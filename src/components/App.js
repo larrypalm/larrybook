@@ -7,6 +7,15 @@ class App extends Component {
 
   state = {
     value: "",
+    movies: ""
+  }
+
+  componentDidMount(){
+    fetch('https://fend-api.herokuapp.com/movies?_limit=20')
+      .then(response => response.json())
+      .then(movies => {
+        this.setState({movies: movies})
+      })
   }
 
   add = () => {
