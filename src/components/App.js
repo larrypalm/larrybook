@@ -11,20 +11,21 @@ class App extends Component {
   }
 
   componentDidMount(){
-    fetch('https://fend-api.herokuapp.com/movies?_limit=20')
-      .then(response => response.json())
-      .then(movies => {
-        this.setState({movies: movies})
-      })
+    this.props.actions.addMovies();
   }
 
   add = () => {
-    console.log("Add");
-    this.props.actions.addPost({
-      content: this.state.value,
+    this.props.actions.postUser({
+      text: this.state.value,
       id: Math.floor(Math.random()*1000+1),
+      completed: false,
     })
     this.setState({value:""})
+    // this.props.actions.addUser({
+    //   content: this.state.value,
+    //   id: Math.floor(Math.random()*1000+1),
+    // })
+    // this.setState({value:""})
   }
 
   remove = (post) => {
@@ -34,10 +35,10 @@ class App extends Component {
   onChange = e => this.setState({ [e.target.name]: e.target.value})
 
   render() {
-    const postList = this.props.posts.map(post =>
-      <div key={post.id}>
-        <p>{post.content}</p>
-        <button onClick={() => this.remove(post)}>Remove Post</button>
+    const userList = this.props.users.map(user =>
+      <div key={user.id}>
+        <p>{user.text}</p>
+        <button onClick={() => this.remove(user)}>Remove Post</button>
       </div>
     )
     return (
@@ -47,7 +48,7 @@ class App extends Component {
           Add Post
         </button>
         <div>
-          {postList}
+          {userList}
         </div>
       </div>
 
@@ -58,6 +59,8 @@ class App extends Component {
 function mapStateToProps(state){
   return {
     posts: state.posts,
+    users: state.users,
+    movies:state.movies,
     error: state.error
   }
 }
