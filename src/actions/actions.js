@@ -1,3 +1,5 @@
+import firebase from '../firebase';
+
 export function addPost(post) {
   return {
     type: "ADD_POST",
@@ -5,10 +7,13 @@ export function addPost(post) {
   }
 }
 
+//sync to redux-state
 export function addUser(user) {
-  return {
-    type: "ADD_USER",
-    payload: user
+  return function(dispatch){
+    firebase.database().ref("users").push(user)
+    .then(addedUser => {
+      dispatch({type: "ADD_USER", payload: user})
+    })
   }
 }
 
@@ -33,6 +38,7 @@ export function addMovies() {
   }
 }
 
+//call to api
 export function postUser(user) {
   return function(dispatch){
      fetch('https://fend-api.herokuapp.com/notes', {
@@ -44,6 +50,14 @@ export function postUser(user) {
        body: JSON.stringify(user)
      })
      .then(response => response.json())
-     .then(json => dispatch(addUser(user)));
+     .then(json => dispatch(addUser(user)))
+     .catch(error => console.log(error));
   }
 }
+
+firebase.database().ref('users')
+  .push({text: "Learn firebase", completed: false})
+  firebase.database().ref('users')
+  .on("value", users => {
+    console.log(users.val());
+  })

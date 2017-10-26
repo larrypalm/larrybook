@@ -2,22 +2,29 @@ import React, { Component } from 'react';
 
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import * as actions from '../actions/actions'
+import * as actions from '../actions/actions';
+import firebase from '../firebase';
 class App extends Component {
 
   state = {
     value: "",
-    movies: ""
   }
 
   componentDidMount(){
-    this.props.actions.addMovies();
+    // this.props.actions.addMovies();
+
+
+    // firebase.database().ref('users').remove();
+    // firebase.database().ref('users/-KxP3CUZwYlMDpd_fXAF/text').remove();
+
+    // firebase.database().ref('users/-KxP3CUZwYlMDpd_fXAF/text').set("hejsna");
+
+
   }
 
   add = () => {
     this.props.actions.postUser({
       text: this.state.value,
-      id: Math.floor(Math.random()*1000+1),
       completed: false,
     })
     this.setState({value:""})
