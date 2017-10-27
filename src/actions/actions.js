@@ -1,23 +1,47 @@
 import firebase from '../firebase';
 
-//Synd db to state
-export function fetchAllUsers(){
+//Sync db to state
+// export function fetchAllUsers(){
+//   return function(dispatch){
+//     firebase.database().ref("users")
+//     .on("value", snapshot => {
+//       let tempArray = []
+//       snapshot.forEach(child => {
+//         tempArray.push({...child.val(), key: child.key});
+//       })
+//       dispatch({type: "FETCH_ALL_USERS", users: tempArray})
+//     })
+//   }
+// }
+
+export function addUserListener(){
   return function(dispatch){
-    firebase.database().ref("users")
-    .on("value", snapshot => {
-      let tempArray = []
-      snapshot.forEach(child => {
-        tempArray.push(Object.assign({}, child.val(), {key: child.key}));
+    return firebase.database().ref("users")
+      .on("child_added", user => {
+        const addedUser = {...user.val(), key: user.key};
+        dispatch({type: "CHILD_ADDED", user: addedUser});
       })
-      dispatch({type: "FETCH_ALL_USERS", users: tempArray})
-    })
   }
 }
 
-export function addPost(post) {
-  return {
-    type: "ADD_POST",
-    payload: post
+export function removeUserListener(){
+  return function(dispatch){
+    return firebase.database().ref("users")
+      .on("child_removed", user => {
+        const removedUser = {...user.val(), key: user.key};
+        dispatch({type: "CHILD_REMOVED", user: removedUser});
+      })
+  }
+}
+
+//Like
+export function childUserListener(){
+  return function(dispatch){
+    return firebase.database().ref("users")
+      .on("child_changed", user => {
+        const changedUser = {...user.val(), key: user.key};
+        dispatch({type: "CHILD_CHANGED", user: changedUser});
+      })
   }
 }
 
@@ -25,18 +49,26 @@ export function addPost(post) {
 export function addUser(user) {
   return function(dispatch){
     firebase.database().ref("users").push(user)
-    // .then(addedUser => {
-    //   const userKey = Object.assign({}, user, {key: addedUser.key});
-    //   dispatch({type: "ADD_USER", payload: userKey})
-    // })
+    .catch(error => {
+      dispatch({type: "FETCH_ERROR", error: error.message});
+    })
+  }
+}
+
+export function likeUser(user) {
+  return function(dispatch){
+    firebase.database().ref(`users/${user.key}/like`).set(!user.like)
+    .catch(error => {
+      dispatch({type: "FETCH_ERROR", error: error.message});
+    })
   }
 }
 
 export function removeUser(user) {
   return function(dispatch){
-    firebase.database().ref('users/key}').remove()
-    .then(() => {
-      dispatch({type: "REMOVE_USER", payload: user})
+    firebase.database().ref(`users/${user.key}`).remove()
+    .catch(error => {
+      dispatch({type: "FETCH_ERROR", error: error.message});
     })
   }
 }
@@ -78,3 +110,10 @@ export function addMovies() {
 //   .on("value", users => {
 //     console.log(users.val());
 //   })
+
+export function addPost(post) {
+  return {
+    type: "ADD_POST",
+    payload: post
+  }
+}

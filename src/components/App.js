@@ -11,7 +11,9 @@ class App extends Component {
   }
 
   componentDidMount(){
-    this.props.actions.fetchAllUsers();
+    // this.props.actions.fetchAllUsers();
+    this.props.actions.addUserListener();
+    this.props.actions.removeUserListener();
     // this.props.actions.addMovies();
     //firebase.database().ref('users').remove();
     // firebase.database().ref('users/-KxP3CUZwYlMDpd_fXAF/text').remove();
@@ -21,13 +23,17 @@ class App extends Component {
   add = () => {
     this.props.actions.addUser({
       text: this.state.value,
-      completed: false,
+      like: false,
     })
     this.setState({value:""})
   }
 
   remove = (user) => {
     this.props.actions.removeUser(user);
+  }
+
+  like = (user) => {
+    this.props.actions.likeUser(user);
   }
 
   onChange = e => this.setState({ [e.target.name]: e.target.value})
@@ -37,6 +43,7 @@ class App extends Component {
       <div key={user.key}>
         <p>{user.text}</p>
         <button onClick={() => this.remove(user)}>Remove User</button>
+        <button onClick={() => this.like(user)}>Like</button>
       </div>
     )
     return (
