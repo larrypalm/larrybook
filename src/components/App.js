@@ -14,6 +14,7 @@ class App extends Component {
     // this.props.actions.fetchAllUsers();
     this.props.actions.addUserListener();
     this.props.actions.removeUserListener();
+    this.props.actions.changeUserListener();
     // this.props.actions.addMovies();
     //firebase.database().ref('users').remove();
     // firebase.database().ref('users/-KxP3CUZwYlMDpd_fXAF/text').remove();

@@ -35,7 +35,7 @@ export function removeUserListener(){
 }
 
 //Like
-export function childUserListener(){
+export function changeUserListener(){
   return function(dispatch){
     return firebase.database().ref("users")
       .on("child_changed", user => {

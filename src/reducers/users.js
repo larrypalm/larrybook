@@ -10,7 +10,7 @@ export default function user(state = [], action){
         return user.key === action.user.key
         ? Object.assign({}, action.user)
         : user
-      })
+      });
     default:
       return state;
   }
