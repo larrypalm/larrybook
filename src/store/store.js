@@ -3,11 +3,13 @@ import thunk from 'redux-thunk';
 import posts from '../reducers/posts';
 import error from '../reducers/errors';
 import movies from '../reducers/movies';
+import users from '../reducers/users';
 
 const rootReducer = combineReducers({
   posts,
   movies,
-  error
+  error,
+  users
 })
 
 const store = createStore(

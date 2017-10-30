@@ -86,3 +86,16 @@ export function addMovies() {
       .catch(error => dispatch({type: "FETCH_ERROR", error}))
   }
 }
+
+export function userChanged() {
+  return function(dispatch){
+    return firebase.auth().onAuthStateChanged(user => {
+      if(user){
+        dispatch({type: "SIGN_IN", user: user});
+      }
+      else{
+        dispatch({type: "SIGN_OUT", user: ''});
+      }
+    })
+  }
+}

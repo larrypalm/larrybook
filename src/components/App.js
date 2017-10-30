@@ -8,12 +8,15 @@ class App extends Component {
 
   state = {
     value: "",
+    email: "",
+    password: ""
   }
 
   componentDidMount(){
     this.props.actions.addPostListener();
     this.props.actions.removePostListener();
     this.props.actions.changePostListener();
+    this.props.actions.userChanged();
     // this.props.actions.fetchAllposts();
     // this.props.actions.addMovies();
     //firebase.database().ref('users').remove();
@@ -37,6 +40,26 @@ class App extends Component {
     this.props.actions.likePost(post);
   }
 
+  register = (e) => {
+    e.preventDefault();
+    firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
+    .then(user => {
+      const newUser = {
+        email: user.email,
+        isAdmin: false
+      }
+      firebase.database().ref(`users/${user.uid}`).set(newUser);
+    });
+  }
+
+  signIn = () => {
+    firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password);
+  }
+
+  signOut = () => {
+    firebase.auth().signOut();
+  }
+
   onChange = e => this.setState({ [e.target.name]: e.target.value})
 
   render() {
@@ -49,12 +72,24 @@ class App extends Component {
     )
     return (
       <div className="App">
+        <div>
+          {this.state.user && this.state.user.email}
+        </div>
         <input type="text" onChange={this.onChange} name="value" value={this.state.value} />
         <button onClick={this.add}>
           Add post
         </button>
         <div>
           {postList}
+        </div>
+        <div className="App">
+          <form onSubmit={this.register}>
+            <input type="text" name="email" onChange={this.onChange} value={this.state.email}/>
+            <input type="password" name="password" onChange={this.onChange} value={this.state.password}/>
+            <input type="submit" name="Register" />
+          </form>
+          <button onClick={this.signIn}>Sign in</button>
+          <button onClick={this.signOut}>Sign out</button>
         </div>
       </div>
 
@@ -65,6 +100,7 @@ class App extends Component {
 function mapStateToProps(state){
   return {
     posts: state.posts,
+
     movies:state.movies,
     error: state.error
   }
