@@ -49,13 +49,7 @@ class App extends Component {
     )
     return (
       <div className="App">
-        <input type="text" onChange={this.onChange} name="value" value={this.state.value} />
-        <button onClick={this.add}>
-          Add User
-        </button>
-        <div>
-          {userList}
-        </div>
+
       </div>
 
     );
