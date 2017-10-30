@@ -14,59 +14,59 @@ import firebase from '../firebase';
 //   }
 // }
 
-export function addUserListener(){
+export function addPostListener(){
   return function(dispatch){
-    return firebase.database().ref("users")
-      .on("child_added", user => {
-        const addedUser = {...user.val(), key: user.key};
-        dispatch({type: "CHILD_ADDED", user: addedUser});
+    return firebase.database().ref("posts")
+      .on("child_added", post => {
+        const addedPost = {...post.val(), key: post.key};
+        dispatch({type: "CHILD_ADDED", post: addedPost});
       })
   }
 }
 
-export function removeUserListener(){
+export function removePostListener(){
   return function(dispatch){
-    return firebase.database().ref("users")
-      .on("child_removed", user => {
-        const removedUser = {...user.val(), key: user.key};
-        dispatch({type: "CHILD_REMOVED", user: removedUser});
+    return firebase.database().ref("posts")
+      .on("child_removed", post => {
+        const removedPost = {...post.val(), key: post.key};
+        dispatch({type: "CHILD_REMOVED", post: removedPost});
       })
   }
 }
 
 //Like
-export function changeUserListener(){
+export function changePostListener(){
   return function(dispatch){
-    return firebase.database().ref("users")
-      .on("child_changed", user => {
-        const changedUser = {...user.val(), key: user.key};
-        dispatch({type: "CHILD_CHANGED", user: changedUser});
+    return firebase.database().ref("posts")
+      .on("child_changed", post => {
+        const changedPost = {...post.val(), key: post.key};
+        dispatch({type: "CHILD_CHANGED", post: changedPost});
       })
   }
 }
 
 //sync to redux-state
-export function addUser(user) {
+export function addPost(post) {
   return function(dispatch){
-    firebase.database().ref("users").push(user)
+    firebase.database().ref("posts").push(post)
     .catch(error => {
       dispatch({type: "FETCH_ERROR", error: error.message});
     })
   }
 }
 
-export function likeUser(user) {
+export function likePost(post) {
   return function(dispatch){
-    firebase.database().ref(`users/${user.key}/like`).set(!user.like)
+    firebase.database().ref(`posts/${post.key}/like`).set(!post.like)
     .catch(error => {
       dispatch({type: "FETCH_ERROR", error: error.message});
     })
   }
 }
 
-export function removeUser(user) {
+export function removePost(post) {
   return function(dispatch){
-    firebase.database().ref(`users/${user.key}`).remove()
+    firebase.database().ref(`posts/${post.key}`).remove()
     .catch(error => {
       dispatch({type: "FETCH_ERROR", error: error.message});
     })
@@ -84,36 +84,5 @@ export function addMovies() {
         })
     })
       .catch(error => dispatch({type: "FETCH_ERROR", error}))
-  }
-}
-
-//call to api
-// export function postUser(user) {
-//   return function(dispatch){
-//      fetch('https://fend-api.herokuapp.com/notes', {
-//        method: 'POST',
-//        headers: {
-//          'Accept': 'application/json',
-//          'Content-Type': 'application/json',
-//        },
-//        body: JSON.stringify(user)
-//      })
-//      .then(response => response.json())
-//      .then(json => dispatch(addUser(user)))
-//      .catch(error => console.log(error));
-//   }
-// }
-
-// firebase.database().ref('users')
-//   .push({text: "Learn firebase", completed: false})
-//   firebase.database().ref('users')
-//   .on("value", users => {
-//     console.log(users.val());
-//   })
-
-export function addPost(post) {
-  return {
-    type: "ADD_POST",
-    payload: post
   }
 }

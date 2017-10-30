@@ -1,16 +1,16 @@
 export default function post(state = [], action){
 
   switch(action.type){
-    case "ADD_POST":
-      return [...state, action.payload];
-    case "REMOVE_POST":
-      return state.filter(post => post.id !== action.payload.id)
-    case "ADD_COMMENT_POST":
+    case "CHILD_ADDED":
+      return [...state, action.post];
+    case "CHILD_REMOVED":
+      return state.filter(post => post.key !== action.post.key);
+    case "CHILD_CHANGED":
       return state.map(post => {
-        return post.id ===action.payload.id
-        ? Object.assign({}, action.payload)
+        return post.key === action.post.key
+        ? Object.assign({}, action.post)
         : post
-      })
+      });
     default:
       return state;
   }

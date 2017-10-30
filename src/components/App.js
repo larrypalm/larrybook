@@ -11,10 +11,10 @@ class App extends Component {
   }
 
   componentDidMount(){
-    // this.props.actions.fetchAllUsers();
-    this.props.actions.addUserListener();
-    this.props.actions.removeUserListener();
-    this.props.actions.changeUserListener();
+    this.props.actions.addPostListener();
+    this.props.actions.removePostListener();
+    this.props.actions.changePostListener();
+    // this.props.actions.fetchAllposts();
     // this.props.actions.addMovies();
     //firebase.database().ref('users').remove();
     // firebase.database().ref('users/-KxP3CUZwYlMDpd_fXAF/text').remove();
@@ -22,39 +22,39 @@ class App extends Component {
   }
 
   add = () => {
-    this.props.actions.addUser({
+    this.props.actions.addPost({
       text: this.state.value,
       like: false,
     })
     this.setState({value:""})
   }
 
-  remove = (user) => {
-    this.props.actions.removeUser(user);
+  remove = (post) => {
+    this.props.actions.removePost(post);
   }
 
-  like = (user) => {
-    this.props.actions.likeUser(user);
+  like = (post) => {
+    this.props.actions.likePost(post);
   }
 
   onChange = e => this.setState({ [e.target.name]: e.target.value})
 
   render() {
-    const userList = this.props.users.map(user =>
-      <div key={user.key}>
-        <p>{user.text}</p>
-        <button onClick={() => this.remove(user)}>Remove User</button>
-        <button onClick={() => this.like(user)}>Like</button>
+    const postList = this.props.posts.map(post =>
+      <div key={post.key}>
+        <p>{post.text}</p>
+        <button onClick={() => this.remove(post)}>Remove post</button>
+        <button onClick={() => this.like(post)}>Like</button>
       </div>
     )
     return (
       <div className="App">
         <input type="text" onChange={this.onChange} name="value" value={this.state.value} />
         <button onClick={this.add}>
-          Add User
+          Add post
         </button>
         <div>
-          {userList}
+          {postList}
         </div>
       </div>
 
@@ -65,7 +65,6 @@ class App extends Component {
 function mapStateToProps(state){
   return {
     posts: state.posts,
-    users: state.users,
     movies:state.movies,
     error: state.error
   }
