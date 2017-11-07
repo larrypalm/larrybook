@@ -64,26 +64,30 @@ export function likePost(post) {
   }
 }
 
-export function removePost(post) {
+export function addPage(page) {
   return function(dispatch){
-    firebase.database().ref(`posts/${post.key}`).remove()
+    firebase.database().ref("pages").push(page)
     .catch(error => {
       dispatch({type: "FETCH_ERROR", error: error.message});
     })
   }
 }
 
-export function addMovies() {
-  return function (dispatch){
-    fetch('https://fend-api.herokuapp.com/movies?_limit=20')
-      .then(response => response.json())
-      .then(movies => {
-        dispatch({
-          type: "ADD_MOVIES",
-          movies
-        })
+export function togglePage(page) {
+  return function(dispatch){
+    firebase.database().ref(`pages/${page.key}/current`).set(!page.current)
+    .catch(error => {
+      dispatch({type: "FETCH_ERROR", error: error.message});
     })
-      .catch(error => dispatch({type: "FETCH_ERROR", error}))
+  }
+}
+
+export function removePost(post) {
+  return function(dispatch){
+    firebase.database().ref(`posts/${post.key}`).remove()
+    .catch(error => {
+      dispatch({type: "FETCH_ERROR", error: error.message});
+    })
   }
 }
 

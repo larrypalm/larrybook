@@ -4,12 +4,16 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import * as actions from '../actions/actions';
 import firebase from '../firebase';
+import LogIn from './LogIn';
+import FeedPage from './FeedPage';
+
 class App extends Component {
 
   state = {
     value: "",
     email: "",
-    password: ""
+    password: "",
+    currentPage : true,
   }
 
   componentDidMount(){
@@ -17,6 +21,11 @@ class App extends Component {
     this.props.actions.removePostListener();
     this.props.actions.changePostListener();
     this.props.actions.userChanged();
+
+    firebase.database().ref("users/uid/isAdmin")
+      .on("value", snapshot => {
+        this.setState({isAdmin: snapshot.val()});
+      });
     // this.props.actions.fetchAllposts();
     // this.props.actions.addMovies();
     //firebase.database().ref('users').remove();
@@ -46,7 +55,7 @@ class App extends Component {
     .then(user => {
       const newUser = {
         email: user.email,
-        isAdmin: false
+        isAdmin: true
       }
       firebase.database().ref(`users/${user.uid}`).set(newUser);
     });
@@ -60,37 +69,41 @@ class App extends Component {
     firebase.auth().signOut();
   }
 
+  togglePage = () => {
+    this.setState ({currentPage: !this.state.currentPage});
+
+  }
+
   onChange = e => this.setState({ [e.target.name]: e.target.value})
 
   render() {
-    const postList = this.props.posts.map(post =>
-      <div key={post.key}>
-        <p>{post.text}</p>
-        <button onClick={() => this.remove(post)}>Remove post</button>
-        <button onClick={() => this.like(post)}>Like</button>
-      </div>
-    )
+
+    const currentPage = this.state.currentPage ?
+    <LogIn
+    value={this.state.value}
+    signIn={this.signIn}
+    signOut={this.signOut}
+    onChange={this.onChange}
+    />
+    :
+    <FeedPage
+    onClick={this.add}
+    onChange={this.onChange}
+    value={this.state.value}
+    posts={this.props.posts}
+    />
+
     return (
       <div className="App">
         <div>
           {this.state.user && this.state.user.email}
         </div>
-        <input type="text" onChange={this.onChange} name="value" value={this.state.value} />
-        <button onClick={this.add}>
-          Add post
-        </button>
+
         <div>
-          {postList}
+          {currentPage}
         </div>
-        <div className="App">
-          <form onSubmit={this.register}>
-            <input type="text" name="email" onChange={this.onChange} value={this.state.email}/>
-            <input type="password" name="password" onChange={this.onChange} value={this.state.password}/>
-            <input type="submit" name="Register" />
-          </form>
-          <button onClick={this.signIn}>Sign in</button>
-          <button onClick={this.signOut}>Sign out</button>
-        </div>
+
+        <button onClick={this.togglePage}>Toggle</button>
       </div>
 
     );
@@ -100,8 +113,8 @@ class App extends Component {
 function mapStateToProps(state){
   return {
     posts: state.posts,
-
-    movies:state.movies,
+    users: state.users,
+    pages: state.pages,
     error: state.error
   }
 }
