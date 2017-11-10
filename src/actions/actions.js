@@ -55,6 +55,15 @@ export function addPost(post) {
   }
 }
 
+export function returnUser(){
+  return function(dispatch){
+    firebase.database().ref("users")
+      .on("value", snapshot=>{
+        console.log(snapshot.val());
+      })
+  }
+}
+
 export function likePost(post) {
   return function(dispatch){
     firebase.database().ref(`posts/${post.key}/like`).set(!post.like)

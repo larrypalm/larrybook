@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import '../App.css';
 
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
@@ -11,6 +12,7 @@ class App extends Component {
 
   state = {
     value: "",
+    user: "",
     email: "",
     password: "",
     currentPage : true,
@@ -22,10 +24,16 @@ class App extends Component {
     this.props.actions.changePostListener();
     this.props.actions.userChanged();
 
-    firebase.database().ref("users/uid/isAdmin")
-      .on("value", snapshot => {
-        this.setState({isAdmin: snapshot.val()});
-      });
+
+    firebase.auth().onAuthStateChanged(user=>{
+      if(user){
+        this.setState({user:user});
+      }
+      else{
+        this.setState({user:""});
+      }
+    })
+
     // this.props.actions.fetchAllposts();
     // this.props.actions.addMovies();
     //firebase.database().ref('users').remove();
@@ -84,6 +92,7 @@ class App extends Component {
     signIn={this.signIn}
     signOut={this.signOut}
     onChange={this.onChange}
+    register={this.register}
     />
     :
     <FeedPage
@@ -91,6 +100,8 @@ class App extends Component {
     onChange={this.onChange}
     value={this.state.value}
     posts={this.props.posts}
+    like={this.like}
+    remove={this.remove}
     />
 
     return (
