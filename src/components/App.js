@@ -45,6 +45,7 @@ class App extends Component {
     this.props.actions.addPost({
       text: this.state.value,
       like: false,
+      user: this.state.user.email,
     })
     this.setState({value:""})
   }
@@ -93,6 +94,7 @@ class App extends Component {
     signOut={this.signOut}
     onChange={this.onChange}
     register={this.register}
+    user={this.state.user}
     />
     :
     <FeedPage

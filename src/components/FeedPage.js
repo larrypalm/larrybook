@@ -4,10 +4,10 @@ import firebase from '../firebase';
 class FeedPage extends Component{
 
   render(){
-
     const postList = this.props.posts.map(post =>
       <div key={post.key}>
         <p>{post.text}</p>
+        <p>{post.user}</p>
         <button onClick={() => this.props.remove(post)}>Remove post</button>
         <button onClick={() => this.props.like(post)}>Like</button>
       </div>
