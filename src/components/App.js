@@ -12,6 +12,7 @@ class App extends Component {
 
   state = {
     value: "",
+    comments: "",
     user: "",
     email: "",
     password: "",
@@ -33,12 +34,6 @@ class App extends Component {
         this.setState({user:""});
       }
     })
-
-    // this.props.actions.fetchAllposts();
-    // this.props.actions.addMovies();
-    //firebase.database().ref('users').remove();
-    // firebase.database().ref('users/-KxP3CUZwYlMDpd_fXAF/text').remove();
-    // firebase.database().ref('users/-KxP3CUZwYlMDpd_fXAF/text').set("hejsna");
   }
 
   add = () => {
@@ -56,6 +51,15 @@ class App extends Component {
 
   like = (post) => {
     this.props.actions.likePost(post);
+  }
+
+  comment = (e) => {
+    e.preventDefault();
+    this.props.actions.commentPost({
+      text: this.state.comment,
+      user: this.state.user.email,
+    })
+    this.setState({comment: ""});
   }
 
   register = (e) => {
@@ -104,6 +108,8 @@ class App extends Component {
     posts={this.props.posts}
     like={this.like}
     remove={this.remove}
+    comment={this.comment}
+    comments={this.state.comments}
     />
 
     return (
@@ -126,6 +132,7 @@ class App extends Component {
 function mapStateToProps(state){
   return {
     posts: state.posts,
+    comments: state.comments,
     users: state.users,
     pages: state.pages,
     error: state.error

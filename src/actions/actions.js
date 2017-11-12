@@ -73,6 +73,15 @@ export function likePost(post) {
   }
 }
 
+export function commentPost(post) {
+  return function(dispatch){
+    firebase.database().ref(`posts/${post.key}/comment`).push(post)
+    .catch(error => {
+      dispatch({type: "FETCH_ERROR", error: error.message});
+    })
+  }
+}
+
 export function addPage(page) {
   return function(dispatch){
     firebase.database().ref("pages").push(page)
