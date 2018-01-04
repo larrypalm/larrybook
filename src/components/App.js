@@ -16,7 +16,6 @@ class App extends Component {
     user: "",
     email: "",
     password: "",
-    currentPage : true,
   }
 
   componentDidMount(){
@@ -25,104 +24,26 @@ class App extends Component {
     this.props.actions.changePostListener();
     this.props.actions.userChanged();
 
+    this.props.actions.addCommentListener();
 
-    firebase.auth().onAuthStateChanged(user=>{
-      if(user){
-        this.setState({user:user});
-      }
-      else{
-        this.setState({user:""});
-      }
-    })
-  }
-
-  add = () => {
-    this.props.actions.addPost({
-      text: this.state.value,
-      like: false,
-      user: this.state.user.email,
-    })
-    this.setState({value:""})
-  }
-
-  remove = (post) => {
-    this.props.actions.removePost(post);
-  }
-
-  like = (post) => {
-    this.props.actions.likePost(post);
-  }
-
-  comment = (e) => {
-    e.preventDefault();
-    this.props.actions.commentPost({
-      text: this.state.comment,
-      user: this.state.user.email,
-    })
-    this.setState({comment: ""});
-  }
-
-  register = (e) => {
-    e.preventDefault();
-    firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
-    .then(user => {
-      const newUser = {
-        email: user.email,
-        isAdmin: true
-      }
-      firebase.database().ref(`users/${user.uid}`).set(newUser);
-    });
   }
 
   signIn = () => {
     firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password);
   }
 
-  signOut = () => {
-    firebase.auth().signOut();
-  }
-
-  togglePage = () => {
-    this.setState ({currentPage: !this.state.currentPage});
-
-  }
-
   onChange = e => this.setState({ [e.target.name]: e.target.value})
 
   render() {
-
-    const currentPage = this.state.currentPage ?
-    <LogIn
-    value={this.state.value}
-    signIn={this.signIn}
-    signOut={this.signOut}
-    onChange={this.onChange}
-    register={this.register}
-    user={this.state.user}
-    />
-    :
-    <FeedPage
-    onClick={this.add}
-    onChange={this.onChange}
-    value={this.state.value}
-    posts={this.props.posts}
-    like={this.like}
-    remove={this.remove}
-    comment={this.comment}
-    comments={this.state.comments}
-    />
-
     return (
+
       <div className="App">
-        <div>
-          {this.state.user && this.state.user.email}
-        </div>
-
-        <div>
-          {currentPage}
-        </div>
-
-        <button onClick={this.togglePage}>Toggle</button>
+        {this.props.user
+        ?
+          <FeedPage userInfo ={this.state.user && this.state.user.email}/>
+        :
+          <LogIn/>
+        }
       </div>
 
     );
@@ -133,7 +54,7 @@ function mapStateToProps(state){
   return {
     posts: state.posts,
     comments: state.comments,
-    users: state.users,
+    user: state.user,
     pages: state.pages,
     error: state.error
   }

@@ -2,14 +2,16 @@ import {createStore, combineReducers, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
 import posts from '../reducers/posts';
 import error from '../reducers/errors';
-import users from '../reducers/users';
+import user from '../reducers/user';
 import comments from '../reducers/comments';
+import userdata from '../reducers/userdata';
 
 const rootReducer = combineReducers({
   posts,
   error,
-  users,
-  comments
+  user,
+  comments,
+  userdata
 })
 
 const store = createStore(

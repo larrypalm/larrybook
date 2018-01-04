@@ -1,33 +1,70 @@
 import React, { Component } from 'react';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import * as actions from '../actions/actions';
 import firebase from '../firebase';
+import FeedPage from './FeedPage';
 
 
 class LogIn extends Component{
 
-componentDidMount(){
-  firebase.database().ref("users")
-    .on("value", snapshot=>{
-      console.log(snapshot.key);
-    })
+  state ={
+    email:"",
+    password:"",
+    isAdmin:"",
+    user: "",
+  }
 
-}
+  componentDidMount(){
 
+  }
+
+  signIn = () => {
+    firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password);
+  }
+
+  onChange = e => this.setState({ [e.target.name]: e.target.value});
+
+  register = (e) => {
+    e.preventDefault();
+    firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
+    .then(user => {
+      const newUser = {
+        email: user.email,
+        isAdmin: false,
+      }
+      firebase.database().ref(`users/${user.uid}`).set(newUser);
+    });
+  }
 
   render(){
+
+
     return(
       <div className="App">
-        <form onSubmit={this.props.register}>
-          <input type="text" name="email" onChange={this.props.onChange} value={this.value}/>
-          <input type="password" name="password" onChange={this.props.onChange} value={this.password}/>
-          <input type="submit" name="Register" />
+        
+        <form onSubmit={this.register}>
+          <input type="text" name="email" onChange={this.onChange} value={this.state.email}/>
+          <input type="password" name="password" onChange={this.onChange} value={this.state.password}/>
+          <input type="submit" name="Register" value="Registrera"/>
         </form>
-        <button onClick={this.props.signIn}>Sign in</button>
-        <button onClick={this.props.signOut}>Sign out</button>
-        <button onClick={this.showUser}>Show</button>
+        <button onClick={this.signIn}>Sign in</button>
       </div>
 
     )
 
   }
 }
-export default LogIn;
+
+function mapStateToProps(state){
+  return {
+    user: state.user,
+  }
+}
+
+function mapDispatchToProps(dispatch){
+  return {
+    actions: bindActionCreators(actions, dispatch)
+  }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(LogIn);

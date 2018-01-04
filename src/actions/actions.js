@@ -14,6 +14,18 @@ import firebase from '../firebase';
 //   }
 // }
 
+export function fetchUsers(){
+  return function(dispatch){
+    return firebase.database().ref(`users`).on('value', userdata => {
+        let tempList = [];
+        userdata.forEach(userdata => {
+          tempList.push({...userdata.val(), key: userdata.key});
+        })
+        dispatch({ type: "FETCH_ALL_USERS", user: tempList });
+    })
+  }
+}
+
 export function addPostListener(){
   return function(dispatch){
     return firebase.database().ref("posts")
@@ -55,6 +67,28 @@ export function addPost(post) {
   }
 }
 
+export function addComment(comment) {
+  return function(dispatch){
+    firebase.database().ref(`comments`).push(comment)
+    .catch(error => {
+      dispatch({type: "FETCH_ERROR", error: error.message});
+    })
+  }
+}
+
+export function fetchComments(){
+  return function(dispatch){
+    return firebase.database().ref(`comments`).on('value', comments => {
+        let tempList = [];
+        comments.forEach(child => {
+          tempList.push({...child.val(), key: child.key});
+        })
+        dispatch({ type: "FETCH_ALL_COMMENTS", comments: tempList });
+    })
+  }
+}
+
+
 export function returnUser(){
   return function(dispatch){
     firebase.database().ref("users")
@@ -64,7 +98,7 @@ export function returnUser(){
   }
 }
 
-export function likePost(post) {
+export function likePost(post, user) {
   return function(dispatch){
     firebase.database().ref(`posts/${post.key}/like`).set(!post.like)
     .catch(error => {
@@ -73,39 +107,64 @@ export function likePost(post) {
   }
 }
 
-export function commentPost(post) {
+export function commentPost(comment) {
   return function(dispatch){
-    firebase.database().ref(`posts/${post.key}/comment`).push(post)
+    firebase.database().ref(`comments`).push(comment)
     .catch(error => {
       dispatch({type: "FETCH_ERROR", error: error.message});
     })
   }
 }
 
-export function addPage(page) {
+export function addCommentListener(){
   return function(dispatch){
-    firebase.database().ref("pages").push(page)
-    .catch(error => {
-      dispatch({type: "FETCH_ERROR", error: error.message});
-    })
+    return firebase.database().ref("posts/comment")
+      .on("child_added", comment => {
+        const commentAdded = {...comment.val(), key: comment.key};
+        dispatch({type: "CHILD_ADDED", comment: commentAdded});
+      })
   }
 }
 
-export function togglePage(page) {
-  return function(dispatch){
-    firebase.database().ref(`pages/${page.key}/current`).set(!page.current)
-    .catch(error => {
-      dispatch({type: "FETCH_ERROR", error: error.message});
-    })
+// export function addPage(page) {
+//   return function(dispatch){
+//     firebase.database().ref("pages").push(page)
+//     .catch(error => {
+//       dispatch({type: "FETCH_ERROR", error: error.message});
+//     })
+//   }
+// }
+//
+// export function togglePage(page) {
+//   return function(dispatch){
+//     firebase.database().ref(`pages/${page.key}/current`).set(!page.current)
+//     .catch(error => {
+//       dispatch({type: "FETCH_ERROR", error: error.message});
+//     })
+//   }
+// }
+
+export function removeComment(comment){
+  return function (dispatch){
+    firebase.database().ref(`comments/${comment.key}`).remove()
   }
 }
 
-export function removePost(post) {
+export function editPost(post) {
   return function(dispatch){
-    firebase.database().ref(`posts/${post.key}`).remove()
-    .catch(error => {
-      dispatch({type: "FETCH_ERROR", error: error.message});
-    })
+    const user = firebase.auth().currentUser;
+    firebase.database().ref(`posts/${post.key}/user`)
+    .on("value", snapshot=>{
+      console.log(snapshot.val());
+      console.log(user.email);
+      if(snapshot.val() === user.email){
+        console.log("Success");
+        firebase.database().ref(`posts/${post.key}/text`).set(post.text);
+      }
+      else{
+        console.log("Error");
+      }
+    });
   }
 }
 
@@ -119,5 +178,14 @@ export function userChanged() {
         dispatch({type: "SIGN_OUT", user: ''});
       }
     })
+  }
+}
+export function userID(user) {
+  return function(dispatch){
+    firebase.database().ref(`users/${user.key}/isAdmin`)
+    .on("value", snapshot=>{
+      console.log(snapshot.val());
+    })
+
   }
 }
